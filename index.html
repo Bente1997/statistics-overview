@@ -90,7 +90,7 @@ graph TD
 
     R -- 3 or More --> X{Data Normally Distributed (for each group)?};
     X -- Yes --> Y{Variances Equal (Levene's Test)?};
-    Y -- Yes --> Z[One-Way ANOVA];
+    Y -- Yes --> Z["One/Two Way ANOVA"];
     Y -- No --> AA[Welch's ANOVA];
     X -- No --> BB[Kruskal-Wallis H Test];
 
