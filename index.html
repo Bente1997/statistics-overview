@@ -3,23 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Scrollable Decision Tree</title>
+    <title>My Zoomable Decision Tree</title>
     <style>
-        /* CSS to enable scrolling for the Mermaid diagram container */
+        /* CSS for the container (optional, but good for defining max visible area) */
         .mermaid-container {
-            width: 100%; /* Or a fixed width like 800px */
-            height: 600px; /* Or a fixed height */
-            overflow: auto; /* This is the key for scrollbars */
+            width: 95%; /* Adjust as needed */
+            height: 800px; /* Adjust as needed */
+            margin: 20px auto; /* Center the container */
             border: 1px solid #ccc; /* Optional: for visual clarity */
-            padding: 10px; /* Optional: some padding inside the container */
-            box-sizing: border-box; /* Include padding/border in width/height */
+            background-color: white;
+            box-sizing: border-box;
+            /* Important: disable default overflow as svg-pan-zoom will handle it */
+            overflow: hidden; 
         }
 
         /* Basic styling for the body */
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
             background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-top: 20px;
         }
 
         /* Optional: Styles for the diagram's class definitions */
@@ -47,106 +56,140 @@
 
     <h1>Decision Tree for Statistical Tests</h1>
 
-    <div class="mermaid-container">
+    <div id="mermaid-zoom-container" class="mermaid-container">
         <pre class="mermaid">
----
-config:
-  theme: redux
-  layout: dagre
----
-flowchart TD
-    A["Start: Type of Dependent Variable"] --> B{"Is the DV Categorical"}
-    B -- Yes --> C{"Are Groups Independent"}
-    C -- Yes --> D{"Number of Categorical Variables"}
-    D -- Two Variables --> E["Chi-Square Test of Independence"]
-    D -- One DV and one IV with more than two levels --> E
-    D -- One DV and one Continuous IV --> F["Logistic or Ordinal Logistic Regression"]
-    C -- No --> G{"Number of Related Groups, DV is Dichotomous"}
-    G -- Two Groups --> H["McNemar Test"]
-    G -- Three or More Groups --> I["Cochran Q Test"]
-    G -- Three or More Groups and DV is Ordinal --> J["Repeated Measures Logistic Regression or Friedman Test"]
-    B -- No --> K{"Is the DV Continuous"}
-    K --> L{"Looking for Association or Relationship"} & P{"Comparing Means or Distributions"}
-    L -- Yes --> M{"Is Data Normally Distributed"}
-    M -- Yes --> N["Pearson Correlation Coefficient"]
-    M -- No --> O["Spearman Rank Correlation Coefficient"]
-    P -- Yes --> Q{"Are Groups Independent"} & KK{"Multiple IVs with Continuous DV"}
-    Q -- Yes --> R{"Number of Independent Groups"}
-    R -- Two Groups --> S{"Data Normality based on Shapiro Wilk"}
-    S -- Yes --> T{"Equal Variances based on Levene or F test"}
-    T -- Yes --> U["Independent Samples t test with Equal Variances"]
-    T -- No --> V["Independent Samples t test with Unequal Variances or Welch"]
-    S -- No --> W["Mann Whitney U Test"]
-    R -- Three or More Groups --> X{"Normal Distribution in Each Group"}
-    X -- Yes --> Y{"Equal Variances based on Levene Test"}
-    Y -- Yes --> Z["One Way ANOVA"]
-    Y -- No --> AA["Welch ANOVA"]
-    X -- No --> BB["Kruskal Wallis H Test"]
-    Q -- No --> CC{"Are Groups Dependent"}
-    CC -- Yes --> DD{"Number of Related Groups"}
-    DD -- Two Groups --> EE{"Normal Distribution of Differences"}
-    EE -- Yes --> FF["Paired Samples t test"]
-    EE -- No --> GG["Wilcoxon Signed Rank Test"]
-    DD -- Three or More Groups --> HH{"Normal Distribution for Each Condition"}
-    HH -- Yes --> II["Repeated Measures ANOVA"]
-    HH -- No --> JJ["Friedman Test"]
-    KK -- Yes --> LL["Multiple Regression or Factorial ANOVA or ANCOVA"]
-    KK --> MM{"Hierarchical or Nested Data"}
-    MM -- Yes --> NN["Linear Mixed Models or Hierarchical Linear Models"]
-     A:::start
-     B:::question
-     C:::question
-     D:::question
-     E:::test_name
-     F:::test_name
-     G:::question
-     H:::test_name
-     I:::test_name
-     J:::test_name
-     K:::question
-     L:::question
-     P:::question
-     M:::question
-     N:::test_name
-     O:::test_name
-     Q:::question
-     KK:::question
-     R:::question
-     S:::question
-     T:::question
-     U:::test_name
-     V:::test_name
-     W:::test_name
-     X:::question
-     Y:::question
-     Z:::test_name
-     AA:::test_name
-     BB:::test_name
-     CC:::question
-     DD:::question
-     EE:::question
-     FF:::test_name
-     GG:::test_name
-     HH:::question
-     II:::test_name
-     JJ:::test_name
-     LL:::test_name
-     MM:::question
-     NN:::test_name
-    classDef test_name fill:#e0f7fa,stroke:#00bcd4,stroke-width:2px,color:#212121
-    classDef question fill:#fffde7,stroke:#ffc107,stroke-width:2px,color:#212121
-    classDef start fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#212121
+graph TD
+    A[Start: Type of Dependent Variable?] --> B{Categorical DV?};
 
+    B -- Yes --> C{Groups Independent?};
+    C -- Yes --> D{How many Categorical Variables?};
+    D -- 2 Vars --> E[Chi-Square Test of Independence];
+    D -- 1 DV, 1 IV (>2 levels) --> E;
+    D -- 1 DV, 1 Continuous IV --> F[Logistic/Ordinal Logistic Regression];
+
+    C -- No --> G{How many Related Groups (Dichotomous DV)};
+    G -- 2 Groups --> H[McNemar's Test];
+    G -- 3+ Groups --> I[Cochran's Q Test];
+    G -- 3+ Groups (Ordinal DV) --> J[Repeated Measures Logistic Regression / Friedman (ranks)];
+
+    B -- No --> K{Continuous DV?};
+    K --> L{Looking for Relationship/Association?};
+    L -- Yes --> M{Data Normally Distributed?};
+    M -- Yes --> N[Pearson Correlation Coefficient];
+    M -- No --> O[Spearman's Rank Correlation Coefficient];
+
+    K --> P{Comparing Means/Distributions?};
+    P -- Yes --> Q{Groups Independent?};
+
+    Q -- Yes --> R{How many Independent Groups?};
+    R -- Exactly 2 --> S{Data Normally Distributed (Shapiro-Wilk)?};
+    S -- Yes --> T{Variances Equal (Levene's/F-test)?};
+    T -- Yes --> U[Independent Samples t-test (Equal Variances)];
+    T -- No --> V[Independent Samples t-test (Unequal Variances / Welch's)];
+    S -- No --> W[Mann-Whitney U Test];
+
+    R -- 3 or More --> X{Data Normally Distributed (for each group)?};
+    X -- Yes --> Y{Variances Equal (Levene's Test)?};
+    Y -- Yes --> Z[One-Way ANOVA];
+    Y -- No --> AA[Welch's ANOVA];
+    X -- No --> BB[Kruskal-Wallis H Test];
+
+    Q -- No --> CC{Groups Dependent?};
+    CC -- Yes --> DD{How many Related Groups?};
+    DD -- Exactly 2 --> EE{Data Normally Distributed (of differences)?};
+    EE -- Yes --> FF[Paired Samples t-test];
+    EE -- No --> GG[Wilcoxon Signed-Rank Test];
+
+    DD -- 3 or More --> HH{Data Normally Distributed (for each condition)?};
+    HH -- Yes --> II[Repeated Measures ANOVA];
+    HH -- No --> JJ[Friedman Test];
+
+    P -- Yes --> KK{Multiple IVs, Continuous DV?};
+    KK -- Yes --> LL[Multiple Regression / Factorial ANOVA / ANCOVA];
+    KK --> MM{Hierarchical/Nested Data / Complex Dependencies?};
+    MM -- Yes --> NN[Linear Mixed Models / Hierarchical Linear Models];
+
+    E[Chi-Square Test of Independence]:::test_name
+    F[Logistic/Ordinal Logistic Regression]:::test_name
+    H[McNemar's Test]:::test_name
+    I[Cochran's Q Test]:::test_name
+    J[Repeated Measures Logistic Regression / Friedman (ranks)]:::test_name
+
+    N[Pearson Correlation Coefficient]:::test_name
+    O[Spearman's Rank Correlation Coefficient]:::test_name
+
+    U[Independent Samples t-test (Equal Variances)]:::test_name
+    V[Independent Samples t-test (Unequal Variances / Welch's)]:::test_name
+    W[Mann-Whitney U Test]:::test_name
+
+    Z[One-Way ANOVA]:::test_name
+    AA[Welch's ANOVA]:::test_name
+    BB[Kruskal-Wallis H Test]:::test_name
+
+    FF[Paired Samples t-test]:::test_name
+    GG[Wilcoxon Signed-Rank Test]:::test_name
+
+    II[Repeated Measures ANOVA]:::test_name
+    JJ[Friedman Test]:::test_name
+
+    LL[Multiple Regression / Factorial ANOVA / ANCOVA]:::test_name
+    NN[Linear Mixed Models / Hierarchical Linear Models]:::test_name
+
+    class A start;
+    class B,C,D,G,K,L,M,P,Q,R,S,T,X,Y,CC,DD,EE,HH,KK,MM question;
         </pre>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@2.6.0/dist/svg-pan-zoom.min.js"></script>
+
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+        // Configure Mermaid to disable max width for flowcharts
+        // This is crucial so svg-pan-zoom can control the scaling
         mermaid.initialize({
-            startOnLoad: true,
-            theme: 'neutral' // You can choose 'default', 'dark', 'forest', 'neutral'
-            // Add other configuration options here if needed, e.g., 'flowchart': { 'useMaxWidth': false }
+            startOnLoad: true, // Mermaid renders on page load
+            theme: 'neutral',
+            flowchart: { useMaxWidth: false }, // Important for flowcharts
+            graph: { useMaxWidth: false }, // For graph TD/LR diagrams
+            // Add other diagram types if you use them, e.g.:
+            // gantt: { useMaxWidth: false },
+            // sequence: { useMaxWidth: false }
         });
+
+        // Use a MutationObserver to wait for Mermaid to render the SVG
+        // This is more robust than window.onload or setTimeout
+        const targetNode = document.getElementById('mermaid-zoom-container');
+        const config = { childList: true, subtree: true };
+
+        const observer = new MutationObserver(function(mutationsList, observer) {
+            for(const mutation of mutationsList) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    const mermaidSvg = targetNode.querySelector('svg');
+                    if (mermaidSvg) {
+                        // Stop observing once the SVG is found
+                        observer.disconnect(); 
+                        
+                        // Initialize svg-pan-zoom on the SVG element
+                        svgPanZoom(mermaidSvg, {
+                            zoomEnabled: true,
+                            controlIconsEnabled: true, // Shows +/- buttons
+                            fit: true, // Fit diagram to container initially
+                            center: true, // Center diagram initially
+                            minZoom: 0.1, // Minimum zoom level (e.g., 10%)
+                            maxZoom: 10, // Maximum zoom level (e.g., 1000%)
+                            zoomScaleSensitivity: 0.2, // How fast zoom changes with mouse wheel
+                            dbClickZoomEnabled: false // Disable double click zoom if you prefer manual controls
+                        });
+                        break; // SVG found, no need to check other mutations
+                    }
+                }
+            }
+        });
+
+        // Start observing the target node for configured mutations
+        observer.observe(targetNode, config);
+
     </script>
 
 </body>
