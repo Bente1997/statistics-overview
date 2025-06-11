@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Scrollable Decision Tree</title>
+    <style>
+        /* CSS to enable scrolling for the Mermaid diagram container */
+        .mermaid-container {
+            width: 100%; /* Or a fixed width like 800px */
+            height: 600px; /* Or a fixed height */
+            overflow: auto; /* This is the key for scrollbars */
+            border: 1px solid #ccc; /* Optional: for visual clarity */
+            padding: 10px; /* Optional: some padding inside the container */
+            box-sizing: border-box; /* Include padding/border in width/height */
+        }
+
+        /* Basic styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        /* Optional: Styles for the diagram's class definitions */
+        .test_name {
+            fill:#e0f7fa;
+            stroke:#00bcd4;
+            stroke-width:2px;
+            color:#212121;
+        }
+        .question {
+            fill:#fffde7;
+            stroke:#ffc107;
+            stroke-width:2px;
+            color:#212121;
+        }
+        .start {
+            fill:#e8f5e9;
+            stroke:#4caf50;
+            stroke-width:2px;
+            color:#212121;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Decision Tree for Statistical Tests</h1>
+
+    <div class="mermaid-container">
+        <pre class="mermaid">
+---
+config:
+  theme: redux
+  layout: dagre
+---
+flowchart TD
+    A["Start: Type of Dependent Variable"] --> B{"Is the DV Categorical"}
+    B -- Yes --> C{"Are Groups Independent"}
+    C -- Yes --> D{"Number of Categorical Variables"}
+    D -- Two Variables --> E["Chi-Square Test of Independence"]
+    D -- One DV and one IV with more than two levels --> E
+    D -- One DV and one Continuous IV --> F["Logistic or Ordinal Logistic Regression"]
+    C -- No --> G{"Number of Related Groups, DV is Dichotomous"}
+    G -- Two Groups --> H["McNemar Test"]
+    G -- Three or More Groups --> I["Cochran Q Test"]
+    G -- Three or More Groups and DV is Ordinal --> J["Repeated Measures Logistic Regression or Friedman Test"]
+    B -- No --> K{"Is the DV Continuous"}
+    K --> L{"Looking for Association or Relationship"} & P{"Comparing Means or Distributions"}
+    L -- Yes --> M{"Is Data Normally Distributed"}
+    M -- Yes --> N["Pearson Correlation Coefficient"]
+    M -- No --> O["Spearman Rank Correlation Coefficient"]
+    P -- Yes --> Q{"Are Groups Independent"} & KK{"Multiple IVs with Continuous DV"}
+    Q -- Yes --> R{"Number of Independent Groups"}
+    R -- Two Groups --> S{"Data Normality based on Shapiro Wilk"}
+    S -- Yes --> T{"Equal Variances based on Levene or F test"}
+    T -- Yes --> U["Independent Samples t test with Equal Variances"]
+    T -- No --> V["Independent Samples t test with Unequal Variances or Welch"]
+    S -- No --> W["Mann Whitney U Test"]
+    R -- Three or More Groups --> X{"Normal Distribution in Each Group"}
+    X -- Yes --> Y{"Equal Variances based on Levene Test"}
+    Y -- Yes --> Z["One Way ANOVA"]
+    Y -- No --> AA["Welch ANOVA"]
+    X -- No --> BB["Kruskal Wallis H Test"]
+    Q -- No --> CC{"Are Groups Dependent"}
+    CC -- Yes --> DD{"Number of Related Groups"}
+    DD -- Two Groups --> EE{"Normal Distribution of Differences"}
+    EE -- Yes --> FF["Paired Samples t test"]
+    EE -- No --> GG["Wilcoxon Signed Rank Test"]
+    DD -- Three or More Groups --> HH{"Normal Distribution for Each Condition"}
+    HH -- Yes --> II["Repeated Measures ANOVA"]
+    HH -- No --> JJ["Friedman Test"]
+    KK -- Yes --> LL["Multiple Regression or Factorial ANOVA or ANCOVA"]
+    KK --> MM{"Hierarchical or Nested Data"}
+    MM -- Yes --> NN["Linear Mixed Models or Hierarchical Linear Models"]
+     A:::start
+     B:::question
+     C:::question
+     D:::question
+     E:::test_name
+     F:::test_name
+     G:::question
+     H:::test_name
+     I:::test_name
+     J:::test_name
+     K:::question
+     L:::question
+     P:::question
+     M:::question
+     N:::test_name
+     O:::test_name
+     Q:::question
+     KK:::question
+     R:::question
+     S:::question
+     T:::question
+     U:::test_name
+     V:::test_name
+     W:::test_name
+     X:::question
+     Y:::question
+     Z:::test_name
+     AA:::test_name
+     BB:::test_name
+     CC:::question
+     DD:::question
+     EE:::question
+     FF:::test_name
+     GG:::test_name
+     HH:::question
+     II:::test_name
+     JJ:::test_name
+     LL:::test_name
+     MM:::question
+     NN:::test_name
+    classDef test_name fill:#e0f7fa,stroke:#00bcd4,stroke-width:2px,color:#212121
+    classDef question fill:#fffde7,stroke:#ffc107,stroke-width:2px,color:#212121
+    classDef start fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#212121
+
+        </pre>
+    </div>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral' // You can choose 'default', 'dark', 'forest', 'neutral'
+            // Add other configuration options here if needed, e.g., 'flowchart': { 'useMaxWidth': false }
+        });
+    </script>
+
+</body>
+</html>
