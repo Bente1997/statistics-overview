@@ -58,85 +58,93 @@
 
     <div id="mermaid-zoom-container" class="mermaid-container">
         <pre class="mermaid">
-graph TD
-    A[Start: Type of Dependent Variable?] --> B{Categorical DV?};
+flowchart TD
+    A["Start: Type of Dependent Variable"] --> B{"Is the DV Categorical"}
+    B -- Yes --> C{"Are Groups Independent"}
+    C -- Yes --> D{"Number of Categorical Variables"}
+    D -- Two Variables --> E["Chi-Square Test of Independence"]
+    D -- One DV and one IV with more than two levels --> E
+    D -- One DV and one Continuous IV --> F["Logistic or Ordinal Logistic Regression"]
+    C -- No --> G{"Number of Related Groups, DV is Dichotomous"}
+    G -- Two Groups --> H["McNemar Test"]
+    G -- Three or More Groups --> I["Cochran Q Test"]
+    G -- Three or More Groups and DV is Ordinal --> J["Repeated Measures Logistic Regression or Friedman Test"]
+    B -- No --> K{"Is the DV Continuous"}
+    K --> L{"Looking for Association or Relationship"} & P{"Comparing Means or Distributions"}
+    L -- Yes --> M{"Is Data Normally Distributed"}
+    M -- Yes --> N["Pearson Correlation Coefficient"]
+    M -- No --> O["Spearman Rank Correlation Coefficient"]
+    P -- Yes --> Q{"Are Groups Independent"} & KK{"Multiple IVs with Continuous DV"}
+    Q -- Yes --> R{"Number of Independent Groups"}
+    R -- Two Groups --> S{"Data Normality based on Shapiro Wilk, QQ plot"}
+    S -- Yes --> T{"Equal Variances based on Levene or F test"}
+    T -- Yes --> U["Independent Samples t test with Equal Variances"]
+    T -- No --> V["Independent Samples t test with Unequal Variances or 'Welch t-test' "]
+    S -- No --> W["Mann Whitney U Test"]
+    R -- Three or More Groups --> X{"Normal Distribution in Each Group"}
+    X -- Yes --> Y{"Equal Variances based on Levene Test"}
+    Y -- Yes --> Z["One/Two Way ANOVA"]
+    Y -- No --> AA["Welch ANOVA"]
+    X -- No --> BB["Kruskal Wallis H Test"]
+    Q -- No --> CC{"Are Groups Dependent"}
+    CC -- Yes --> DD{"Number of Related Groups"}
+    DD -- Two Groups --> EE{"Normal Distribution of Differences"}
+    EE -- Yes --> FF["Paired Samples t test"]
+    EE -- No --> GG["Wilcoxon Signed Rank Test"]
+    DD -- Three or More Groups --> HH{"Normal Distribution for Each Condition"}
+    HH -- Yes --> II{"Sphericity"}
+    II -- Yes --> OO["Repeated Measures ANOVA"]
+    II -- No --> PP["Repeated Measures ANOVA with corrections"]
+    HH -- No --> JJ["Friedman Test"]
+    KK -- Yes --> LL["Multiple Regression or Factorial ANOVA or ANCOVA"]
+    KK --> MM{"Hierarchical or Nested Data"}
+    MM -- Yes --> NN["Linear Mixed Models or Hierarchical Linear Models"]
+     A:::start
+     B:::question
+     C:::question
+     D:::question
+     E:::test_name
+     F:::test_name
+     G:::question
+     H:::test_name
+     I:::test_name
+     J:::test_name
+     K:::question
+     L:::question
+     P:::question
+     M:::question
+     N:::test_name
+     O:::test_name
+     Q:::question
+     KK:::question
+     R:::question
+     S:::question
+     T:::question
+     U:::test_name
+     V:::test_name
+     W:::test_name
+     X:::question
+     Y:::question
+     Z:::test_name
+     AA:::test_name
+     BB:::test_name
+     CC:::question
+     DD:::question
+     EE:::question
+     FF:::test_name
+     GG:::test_name
+     HH:::question
+     II:::question
+     JJ:::test_name
+     LL:::test_name
+     MM:::question
+     NN:::test_name
+     OO:::test_name
+     PP:::test_name
+    classDef test_name fill:#e0f7fa,stroke:#00bcd4,stroke-width:2px,color:#212121
+    classDef question fill:#fffde7,stroke:#ffc107,stroke-width:2px,color:#212121
+    classDef start fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#212121
 
-    B -- Yes --> C{Groups Independent?};
-    C -- Yes --> D{How many Categorical Variables?};
-    D -- 2 Vars --> E[Chi-Square Test of Independence];
-    D -- 1 DV, 1 IV (>2 levels) --> E;
-    D -- 1 DV, 1 Continuous IV --> F[Logistic/Ordinal Logistic Regression];
-
-    C -- No --> G{How many Related Groups (Dichotomous DV)};
-    G -- 2 Groups --> H[McNemar's Test];
-    G -- 3+ Groups --> I[Cochran's Q Test];
-    G -- 3+ Groups (Ordinal DV) --> J[Repeated Measures Logistic Regression / Friedman (ranks)];
-
-    B -- No --> K{Continuous DV?};
-    K --> L{Looking for Relationship/Association?};
-    L -- Yes --> M{Data Normally Distributed?};
-    M -- Yes --> N[Pearson Correlation Coefficient];
-    M -- No --> O[Spearman's Rank Correlation Coefficient];
-
-    K --> P{Comparing Means/Distributions?};
-    P -- Yes --> Q{Groups Independent?};
-
-    Q -- Yes --> R{How many Independent Groups?};
-    R -- Exactly 2 --> S{Data Normally Distributed (Shapiro-Wilk)?};
-    S -- Yes --> T{Variances Equal (Levene's/F-test)?};
-    T -- Yes --> U[Independent Samples t-test (Equal Variances)];
-    T -- No --> V[Independent Samples t-test (Unequal Variances / Welch's)];
-    S -- No --> W[Mann-Whitney U Test];
-
-    R -- 3 or More --> X{Data Normally Distributed (for each group)?};
-    X -- Yes --> Y{Variances Equal (Levene's Test)?};
-    Y -- Yes --> Z["One or Two Way ANOVA"];
-    Y -- No --> AA[Welch's ANOVA];
-    X -- No --> BB[Kruskal-Wallis H Test];
-
-    Q -- No --> CC{Groups Dependent?};
-    CC -- Yes --> DD{How many Related Groups?};
-    DD -- Exactly 2 --> EE{Data Normally Distributed (of differences)?};
-    EE -- Yes --> FF[Paired Samples t-test];
-    EE -- No --> GG[Wilcoxon Signed-Rank Test];
-
-    DD -- 3 or More --> HH{Data Normally Distributed (for each condition)?};
-    HH -- Yes --> II[Repeated Measures ANOVA];
-    HH -- No --> JJ[Friedman Test];
-
-    P -- Yes --> KK{Multiple IVs, Continuous DV?};
-    KK -- Yes --> LL[Multiple Regression / Factorial ANOVA / ANCOVA];
-    KK --> MM{Hierarchical/Nested Data / Complex Dependencies?};
-    MM -- Yes --> NN[Linear Mixed Models / Hierarchical Linear Models];
-
-    E[Chi-Square Test of Independence]:::test_name
-    F[Logistic/Ordinal Logistic Regression]:::test_name
-    H[McNemar's Test]:::test_name
-    I[Cochran's Q Test]:::test_name
-    J[Repeated Measures Logistic Regression / Friedman (ranks)]:::test_name
-
-    N[Pearson Correlation Coefficient]:::test_name
-    O[Spearman's Rank Correlation Coefficient]:::test_name
-
-    U[Independent Samples t-test (Equal Variances)]:::test_name
-    V[Independent Samples t-test (Unequal Variances / Welch's)]:::test_name
-    W[Mann-Whitney U Test]:::test_name
-
-    Z[One-Way ANOVA]:::test_name
-    AA[Welch's ANOVA]:::test_name
-    BB[Kruskal-Wallis H Test]:::test_name
-
-    FF[Paired Samples t-test]:::test_name
-    GG[Wilcoxon Signed-Rank Test]:::test_name
-
-    II[Repeated Measures ANOVA]:::test_name
-    JJ[Friedman Test]:::test_name
-
-    LL[Multiple Regression / Factorial ANOVA / ANCOVA]:::test_name
-    NN[Linear Mixed Models / Hierarchical Linear Models]:::test_name
-
-    class A start;
-    class B,C,D,G,K,L,M,P,Q,R,S,T,X,Y,CC,DD,EE,HH,KK,MM question;
         </pre>
     </div>
 
